@@ -65,7 +65,12 @@
     .container div:nth-child(5),
     .container div:nth-child(6),
     .container div:nth-child(7) {
-        animation: none;  /* disable animation on small screens */
+        position: absolute;
+        animation: none;
+        transition: background-color 2s ease;
+        border-radius: 50%;
+        will-change: transform;
+        transform: translateZ(0);
     }
     
     .container::after {
