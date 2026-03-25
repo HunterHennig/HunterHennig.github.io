@@ -188,6 +188,7 @@
             ctx.drawImage(img, 0, 0);
 
             const pixels = [];
+            const step = 0.2;
             for (let x = 0.1; x <= 0.9; x += step) {
                 for (let y = 0.1; y <= 0.9; y += step) {
                     const px = ctx.getImageData(
