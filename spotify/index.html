@@ -191,7 +191,7 @@
             ctx.drawImage(img, 0, 0);
 
             const pixels = [];
-            const step = 0.2;
+            const step = 0.1;
             for (let x = 0.1; x <= 0.9; x += step) {
                 for (let y = 0.1; y <= 0.9; y += step) {
                     const px = ctx.getImageData(
@@ -228,6 +228,10 @@
             const colors = sampledColors.map(([r, g, b]) =>
                 `rgb(${Math.floor(r * darkenFactor)}, ${Math.floor(g * darkenFactor)}, ${Math.floor(b * darkenFactor)})`
             );
+
+            while (sampledColors.length < 7 && sampledColors.length > 0) {
+                sampledColors.push(sampledColors[sampledColors.length % 3]);
+            }
 
             const divs = document.querySelectorAll('.container div');
             colors.forEach((color, i) => {
