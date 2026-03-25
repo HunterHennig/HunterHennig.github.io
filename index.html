@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify Tracker</title>
+    <link rel="icon" href="https://open.spotify.com/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <!-- background animation -->
+    <div class="container">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+
+    <div class="content">
+        <h1 class ='loading-dots'>Loading Spotify Data</h1>
+        <div id="status">Logging in...</div>
+        <div class="glass">
+            <img id="albumcover" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==" alt="Album Cover" style="display:none; width:300px; height:300px;">
+            <div id="songname"></div>
+            <div id="artistname"></div>
+        </div>
+    </div>
+
+    <script>
+        // Grab the tokens from the URL hash
+        const params = new URLSearchParams(window.location.hash.substring(1));
+        let access_token = params.get('access_token');
+        let refresh_token = params.get('refresh_token');
+
+        const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+        async function refreshAccessToken() {
+            const response = await fetch('/refresh_token?refresh_token=' + refresh_token);
+            const data = await response.json();
+
+            if (data.access_token) {
+                access_token = data.access_token;
+                console.log('Access token refreshed');
+            }
+            if (data.refresh_token) {
+                refresh_token = data.refresh_token;
+            }
+        }
+
+        setInterval(refreshAccessToken, 55 * 60 * 1000);
+
+        if (access_token) {
+
+            document.getElementById('status').innerText = 'Logged in!';
+
+            function statusHandler(res) {
+
+                if (res.status === 401) {
+                    document.getElementById('status').innerText = 'Connection lost. Reconnecting...';
+                    refreshAccessToken();
+                    return null;
+                }
+                document.getElementById('status').innerText = 'Logged in!';
+
+                if (res.status === 204) {
+                    document.getElementById('albumcover').style.display = 'none';
+                    document.getElementById('albumcover').src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==";
+                    document.getElementById('songname').innerText = 'Nothing currently playing.';
+                    document.getElementById('artistname').innerText = '';
+                    document.querySelector('.glass').style.display = 'none';
+                    
+                    // Reset header to loading state
+                    sleep(2500).then(() => {
+                        document.querySelector('h1').style.display = 'none';
+                    });
+                    sleep(2500).then(() => {
+                        const h1 = document.querySelector('h1');
+                        h1.classList.add('loading-dots');
+                        h1.innerText = 'Waiting for music';
+                        h1.style.display = 'block';
+                    });
+
+                    // Reset container divs to CSS defaults
+                    const divs = document.querySelectorAll('.container div');
+                    divs.forEach(div => div.style.backgroundColor = '');
+
+                    return null;
+                }
+                return res.json();
+            }
+
+            // Function to grab 5 color samples from the cover art for background
+            async function pickColorsFromAlbumArt(imageUrl) {
+                // Draw the album art to a canvas
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.src = imageUrl;
+                
+                await new Promise(resolve => img.onload = resolve);
+                
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d', { willReadFrequently: true });
+                ctx.drawImage(img, 0, 0);
+                
+                // Sample a grid of pixels and pick the most saturated ones
+                const pixels = [];
+                for (let x = 0.1; x <= 0.9; x += 0.1) {
+                    for (let y = 0.1; y <= 0.9; y += 0.1) {
+                        const px = ctx.getImageData(
+                            Math.floor(x * canvas.width),
+                            Math.floor(y * canvas.height),
+                            1, 1
+                        ).data;
+                        const r = px[0], g = px[1], b = px[2];
+
+                        const max = Math.max(r, g, b);
+                        const min = Math.min(r, g, b);
+                        const saturation = max - min;
+
+                        // brightness between 0-255
+                        const brightness = (r + g + b) / 3;
+
+                        // exclude colors that are too dark or too light
+                        if (brightness < 40 || brightness > 220) continue;
+
+                        // richness score rewards high saturation and mid-range brightness
+                        const richness = saturation * (1 - Math.abs(brightness - 128) / 128);
+
+                        pixels.push({ r, g, b, richness });
+                    }
+                }
+
+                // Sort by richness and pick the top 5 most vibrant
+                pixels.sort((a, b) => b.richness - a.richness);
+                
+                const sampledColors = [];
+                for (const pixel of pixels) {
+                    const color = [pixel.r, pixel.g, pixel.b];
+                    const tooSimilar = sampledColors.some(existing => {
+                        return Math.abs(existing[0] - color[0]) < 50 &&
+                            Math.abs(existing[1] - color[1]) < 50 &&
+                            Math.abs(existing[2] - color[2]) < 50;
+                    });
+                    if (!tooSimilar) sampledColors.push(color);
+                    if (sampledColors.length === 5) break;
+                }
+
+                const darkenFactor = 0.4; // lower = darker, range 0-1
+                const colors = sampledColors.map(([r, g, b]) => `rgb(
+                    ${Math.floor(r * darkenFactor)}, 
+                    ${Math.floor(g * darkenFactor)}, 
+                    ${Math.floor(b * darkenFactor)}
+                )`);
+                
+                // Apply colors to container divs
+                const divs = document.querySelectorAll('.container div');
+                colors.forEach((color, i) => {
+                    if (divs[i]) divs[i].style.backgroundColor = color;
+                });
+            }
+            
+            function fetchNowPlaying() {
+
+                // Fetch currently playing song
+                fetch('https://api.spotify.com/v1/me/player/currently-playing', {
+                    headers: { 'Authorization': 'Bearer ' + access_token }
+                })
+
+                .then(res => statusHandler(res))
+
+                .then(async data => {
+                    if (data) {
+                        const song = data.item.name;
+                        const artist = data.item.artists.map(a => a.name).join(', ');
+                        const albumArt = data.item.album.images[0].url;
+                        
+                        await sleep(1750);
+
+                        document.getElementById('songname').innerText = `${song}`;
+                        document.getElementById('artistname').innerText = `${artist}`;
+
+                        const img = document.getElementById('albumcover');
+                        img.src = albumArt;
+                        img.style.display = 'block';
+                        document.querySelector('.glass').style.display = 'block';
+
+                        // Update background colors from album art
+                        pickColorsFromAlbumArt(albumArt);
+
+                        // Update header with user profile data
+                        if (userProfileData) updateHeader(userProfileData);
+                    }
+                })
+
+                .catch(err => console.error('Error fetching now playing:', err));
+            }
+
+            let userProfileData = null;
+
+            async function fetchUserProfile() {
+                const response = await fetch('https://api.spotify.com/v1/me', {
+                    headers: { 'Authorization': 'Bearer ' + access_token }
+                });
+                if (response.status === 401) {
+                    await refreshAccessToken();
+                    const retry = await fetch('https://api.spotify.com/v1/me', {
+                        headers: { 'Authorization': 'Bearer ' + access_token }
+                    });
+                    userProfileData = await retry.json();
+                    return;
+                }
+                userProfileData = await response.json();
+            }
+
+            function updateHeader(data) {
+                const h1 = document.querySelector('h1');
+                const name = data.display_name || data.id;
+                if (name) {
+                    h1.classList.remove('loading-dots');
+                    h1.innerText = `${name} is listening to`;
+                }
+            }   
+
+            fetchUserProfile().then(() => fetchNowPlaying());
+            setInterval(fetchNowPlaying, 5000); // Refresh every 5 seconds
+
+        } else {
+            const base = window.location.protocol === 'file:'
+                ? 'http://127.0.0.1:8888'
+                : window.location.origin;
+            window.location.href = base + '/login';
+        }
+    </script>
+</body>
+</html>
