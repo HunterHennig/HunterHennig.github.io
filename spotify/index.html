@@ -204,6 +204,7 @@
                     const min = Math.min(r, g, b);
                     const saturation = max - min;
                     const brightness = (r + g + b) / 3;
+
                     if (brightness < 40 || brightness > 220) continue;
                     const richness = saturation * (1 - Math.abs(brightness - 128) / 128);
                     pixels.push({ r, g, b, richness });
@@ -212,7 +213,7 @@
 
             pixels.sort((a, b) => b.richness - a.richness);
 
-            const sampledColors = [];
+            let sampledColors = [];
             for (const pixel of pixels) {
                 const color = [pixel.r, pixel.g, pixel.b];
                 const tooSimilar = sampledColors.some(existing =>
@@ -223,26 +224,26 @@
                 if (!tooSimilar) sampledColors.push(color);
                 if (sampledColors.length === 7) break;
             }
+            
+            if (sampledColors.length === 0) {
+                sampledColors = [[31, 51, 43]]; 
+            }
+
+            const originalCount = sampledColors.length;
+            for (let i = originalCount; i < 7; i++) {
+                sampledColors.push(sampledColors[i % originalCount]);
+            }
 
             const darkenFactor = 0.4;
-            const colors = sampledColors.map(([r, g, b]) =>
+            const finalColors = sampledColors.map(([r, g, b]) =>
                 `rgb(${Math.floor(r * darkenFactor)}, ${Math.floor(g * darkenFactor)}, ${Math.floor(b * darkenFactor)})`
             );
 
-            while (sampledColors.length < 7 && sampledColors.length > 0) {
-                sampledColors.push(sampledColors[sampledColors.length % 3]);
-            }
-
-            if (sampledColors.length > 0 && sampledColors.length < 7) {
-                for (let i = sampledColors.length; i < 7; i++) {
-                    // Cycle through the colors we already found to fill the gaps
-                    sampledColors.push(sampledColors[i % sampledColors.length]);
-                }
-            }
-
             const divs = document.querySelectorAll('.container div');
-            colors.forEach((color, i) => {
-                if (divs[i]) divs[i].style.backgroundColor = color;
+            divs.forEach((div, i) => {
+                if (i < 7) {
+                    div.style.backgroundColor = finalColors[i];
+                }
             });
         }
 
