@@ -1,3 +1,3 @@
 # HunterHennig.github.io
 
-[Spotify Now Playing](/spotify)
+[Spotify Now Playing](https://hunterhennig.github.io/spotify/)
