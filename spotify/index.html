@@ -154,12 +154,7 @@
 
         const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-        const isSmallScreen = window.screen.width <= 1024;
-
         function getAlbumArtUrl(images) {
-            if (isSmallScreen && images.length > 1) {
-                return images[images.length - 1].url;
-            }
             return images[0].url;
         }
 
@@ -193,7 +188,6 @@
             ctx.drawImage(img, 0, 0);
 
             const pixels = [];
-            const step = isSmallScreen ? 0.2 : 0.1;
             for (let x = 0.1; x <= 0.9; x += step) {
                 for (let y = 0.1; y <= 0.9; y += step) {
                     const px = ctx.getImageData(
