@@ -54,7 +54,6 @@
     animation: gradient 8s ease-in-out infinite;
     transition: background-color 2s ease;
     border-radius: 50%;
-    filter: blur(4.5vw);
     will-change: transform;
     transform: translateZ(0);
 }
@@ -117,7 +116,7 @@
     height: 100%;
     width: 100%;
     inset: 0;
-    backdrop-filter: blur(0.5vw);
+    backdrop-filter: blur(4.5vw);
     z-index: 1;
 }
 .content{
