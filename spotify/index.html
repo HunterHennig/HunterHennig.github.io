@@ -289,14 +289,8 @@
                 h1.innerText = 'Waiting for music';
 
                 const divs = document.querySelectorAll('.container div');
-                divs.forEach((div, i) => {
-                    if (i < colors.length) {
-                        div.style.backgroundColor = colors[i];
-                    } else {
-                        // Fallback if somehow no colors were found at all
-                        div.style.backgroundColor = ''; 
-                    }
-                });
+                divs.forEach(div => div.style.backgroundColor = '');
+                
                 lastSongName = null;
                 lastAlbumArt = null;
                 return;
