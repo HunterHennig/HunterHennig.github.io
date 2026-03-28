@@ -23,7 +23,7 @@
         <h1 class ='loading-dots'>Loading Spotify Data</h1>
         <div id="status">Logging in...</div>
         <div class="glass">
-            <div class="albumcover-wrapper">
+            <div class="albumcover-wrapper" style="display:none;">
                 <img id="albumcover" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==" alt="Album Cover" style="display:none;">
             </div>
             <div class="scroll-container">
@@ -300,6 +300,7 @@
 
             if (response.status === 204) {
                 document.getElementById('albumcover').style.display = 'none';
+                document.querySelector('.albumcover-wrapper').style.display = 'none';
                 document.getElementById('albumcover').src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==";
                 document.getElementById('songname').innerText = '';
                 document.getElementById('artistname').innerText = '';
@@ -340,6 +341,7 @@
                 const img = document.getElementById('albumcover');
                 img.src = albumArt;
                 img.style.display = 'block';
+                document.querySelector('.albumcover-wrapper').style.display = 'inline-flex';
                 document.querySelector('.glass').style.display = 'flex';
                 setTimeout(() => {
                     requestAnimationFrame(() => {
