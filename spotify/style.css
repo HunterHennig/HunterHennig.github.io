@@ -1,3 +1,4 @@
+/* set up font to be used */
 @font-face {
     font-family: 'Nunito';
     src: url('fonts/Nunito/Nunito-Bold.ttf') format('truetype');
@@ -19,6 +20,7 @@
     font-style: normal;
     font-display: swap;
 }
+
 /* set up animated background */
 *{
     margin: 0;
@@ -86,28 +88,29 @@
     animation-delay: 1.5s;
 }
 .container div:nth-child(5){
-    height: 65%;
+    height: 75%;
     width: 80%;
     background-color: #376247;
-    bottom: -15%;
-    right: -20%;
+    bottom: -5%;
+    right: -10%;
     animation-delay: 3s;
 }
 .container div:nth-child(6){
     height: 70%;
     width: 65%;
     background-color: #384D4D;
-    bottom: 0;
-    right: -50%;
+    bottom: 0%;
+    right: -45%;
     animation-delay: 1s;
 }
 .container div:nth-child(7){
-    height: 25%;
+    height: 45%;
     width: 30%;
     background-color: #375246;
     top: 15%;
     left: 15%;
     animation-delay: 2.5s;
+    opacity: 0.75;
 }
 .container::after{
     position: absolute;
@@ -123,6 +126,32 @@
     z-index: 2;
     padding-top: min(5vh, 3vw);
     padding-bottom: min(5vh, 3vw);
+}
+
+/* set up marquee effect if song or artist name is too long to fit on one line */
+.scroll-container {
+    overflow: hidden;
+    width: 100%;
+}
+
+.scroll-text{
+    display: inline-block;
+    white-space: nowrap;
+    animation: none;
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+.scroll-text.scrolling{
+    animation: marquee var(--scroll-duration, 8s) cubic-bezier(0.15, 0, 0.85, 1) infinite alternate;
+}
+
+@keyframes marquee{
+    0%      { transform: translateX(0); }
+    10%     { transform: translateX(0); }
+    90%     { transform: translateX(var(--scroll-distance, 0px)); }
+    100%    { transform: translateX(var(--scroll-distance, 0px)); }
 }
 
 /* Add glassy background effect */
@@ -142,9 +171,9 @@
     flex-direction:column;
     align-items: center;
     justify-content: center;
-    min-width: 40vw;
-    max-width: 55vw;
-    max-height: 90vh;
+    min-width: max(40vw, 300px);
+    max-width: 40vw;
+    max-height: 85vh;
     overflow-y: auto;
     word-wrap: break-word;
 }
@@ -162,6 +191,8 @@
 }
 
 /* start of main page content */
+
+/* set up default body attributes */
 body {
     margin: 0;
     padding: 0;
@@ -170,14 +201,17 @@ body {
     background-color: #1D332A;
 }
 
+/* set up header for "Loading Spotify Data" and "<USER> is listening to" text */
 h1 {
-    font-size: 1.5vw;
+    font-size: max(1.5vw, 14px);
     color: #ffffff;
     font-weight: 700;
     margin-bottom: 2.5vh;
+    margin-top: -2.5vh;
     opacity: 0.35;
 }
 
+/* store connection stats (not shown) */
 #status {
     position: fixed;
     top: 30px;
@@ -187,36 +221,38 @@ h1 {
     display: none;
 }
 
+/* attributes for album cover image */
 #albumcover {
     border-radius: 0.75vw;
     margin: auto;
     border: 0.2vw solid rgba(0, 0, 0, 0.35);
     outline: 0.35vw solid rgba(255, 255, 255, 0.55);
     display: block;
-    width: min(75vw, 75vh);
-    height: min(75vw, 75vh);
+    width: min(72.5vw, 55vh);
+    height: min(72.5vw, 55vh);
     object-fit: contain;
-    max-width: min(27.5vw, 27.5vh);
-    max-height: min(27.5vw, 27.5vh);
 }
 
+/* attributes for song name text */
 #songname {
-    font-size: 2.5vw;
-    margin-top: 1.5vw;
+    font-size: max(4vw, 22px);
     color: #ffffff;
     font-weight: 400;
     text-shadow: 0 0.15vw 1vw rgba(0, 0, 0, 0.5);
     letter-spacing: 0.05em;
     opacity: 0.9;
     width: 100%;
+    margin-top: 1.25vh;
     margin-left: auto;
     margin-right: auto;
+    max-height: 500vw;
 }
 
-#songname::after {
+/* create dividing line between song name and artist name */
+.divider{
     content: "";
     display: block;
-    margin: 0 auto;
+    margin: 1.5vh auto;
     margin-top: 1.5vh;
     margin-bottom: 1.5vh;
     width: 100%;
@@ -225,12 +261,28 @@ h1 {
     border-radius: 99px;
 }
 
+/* attributes for artist name text */
 #artistname {
-    font-size: 1.5vw;
+    font-size: max(2.5vw, 14px);
     color: #b4b4b4;
     font-weight: 300;
     text-shadow: 0 0.15vw 1vw rgba(0, 0, 0, 0.5);
     letter-spacing: 0.1em;
     text-transform: uppercase;
     opacity: 0.9;
+}
+
+/* alter specified attributes if in portait mode */
+@media(orientation: portrait){
+    h1{
+        font-size: max(3vw, 24px);
+        margin-top: 0vh;
+    }
+    #songname{
+        font-size: max(4vw, 75px);
+        margin-top: 1.5vh;
+    }
+    #artistname{
+        font-size: max(2.5vw, 37.5px);
+    }
 }
