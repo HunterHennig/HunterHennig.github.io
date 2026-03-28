@@ -175,7 +175,7 @@
     min-width: max(40vw, 300px);
     max-width: 40vw;
     max-height: 85vh;
-    overflow: visible;
+    overflow: hidden;
     word-wrap: break-word;
 }
 
