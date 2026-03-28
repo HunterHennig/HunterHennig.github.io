@@ -344,14 +344,10 @@
                 document.querySelector('.albumcover-wrapper').style.display = 'inline-flex';
                 document.querySelector('.glass').style.display = 'flex';
                 setTimeout(() => {
-                    requestAnimationFrame(() => {
-                        requestAnimationFrame(() => {
-                            resizeAlbumCover();
-                            resizeText();
-                            applyScrollEffect('songname', 'artistname');
-                        });
-                    });
-                }, 100);
+                    resizeAlbumCover();
+                    resizeText();
+                    applyScrollEffect('songname', 'artistname');
+                }, 5);
                 window.addEventListener('resize', resizeAlbumCover);
 
                 if (albumChanged) {
@@ -415,14 +411,10 @@
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimer);
             resizeTimer = setTimeout(() => {
-                requestAnimationFrame(() => {
-                    requestAnimationFrame(() => {
                         resizeAlbumCover();
                         resizeText();
                         applyScrollEffect('songname', 'artistname');
-                    });
-                });
-            }, 300);
+            }, 5);
         });
         
 
