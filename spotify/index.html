@@ -23,9 +23,11 @@
         <h1 class ='loading-dots'>Loading Spotify Data</h1>
         <div id="status">Logging in...</div>
         <div class="glass">
-            <img id="albumcover" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==" alt="Album Cover" style="display:none;">
+            <div class="albumcover-wrapper">
+                <img id="albumcover" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==" alt="Album Cover" style="display:none;">
+            </div>
             <div class="scroll-container">
-                <div id="songname" class="scroll-text"></div>
+            <div id="songname" class="scroll-text"></div>
             </div>
             <div class="divider"></div>
             <div class="scroll-container">
@@ -269,6 +271,20 @@
             return data;
         }
 
+        function resizeAlbumCover() {
+            const img = document.getElementById('albumcover');
+            const size = Math.min(window.innerWidth * 0.34, window.innerHeight * 0.55) + 'px';
+            img.style.width = size;
+            img.style.height = size;
+        }
+
+        function resizeText() {
+            const songSize = Math.min(window.innerWidth * 0.038, window.innerHeight * 0.05);
+            const artistSize = Math.min(window.innerWidth * 0.024, window.innerHeight * 0.033);
+            document.getElementById('songname').style.fontSize = songSize + 'px';
+            document.getElementById('artistname').style.fontSize = artistSize + 'px';
+        }
+
         async function fetchNowPlaying() {
             await ensureValidToken();
             const access_token = sessionStorage.getItem('access_token');
@@ -325,6 +341,16 @@
                 img.src = albumArt;
                 img.style.display = 'block';
                 document.querySelector('.glass').style.display = 'flex';
+                setTimeout(() => {
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => {
+                            resizeAlbumCover();
+                            resizeText();
+                            applyScrollEffect('songname', 'artistname');
+                        });
+                    });
+                }, 100);
+                window.addEventListener('resize', resizeAlbumCover);
 
                 if (albumChanged) {
                     lastAlbumArt = albumArt;
@@ -360,9 +386,13 @@
             const songOverflow = songEl.scrollWidth - songContainer.clientWidth;
             const artistOverflow = artistEl.scrollWidth - artistContainer.clientWidth;
 
+            // set the number of characters in each
+            const songFontSize = parseFloat(window.getComputedStyle(songEl).fontSize);
+            const artistFontSize = parseFloat(window.getComputedStyle(artistEl).fontSize);
+
             // calculate the duration for each container
-            const songDuration = songOverflow > 0 ? Math.max(4, songOverflow / 100) : 0 ;
-            const artistDuration = artistOverflow > 0 ? Math.max(4, artistOverflow / 45) : 0 ;
+            const songDuration = songOverflow > 0 ? Math.max(4, (songEl.innerText.length * songFontSize) / 150) : 0 ;
+            const artistDuration = artistOverflow > 0 ? Math.max(4, (artistEl.innerText.length * artistFontSize) / 150) : 0 ;
             
             // if both containers are scrolling, use the duration value for both to sync the animation
             const syncedDuration = Math.max(songDuration, artistDuration) + 's';
@@ -378,6 +408,20 @@
                 artistEl.classList.add('scrolling');
             }
         }
+
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        resizeAlbumCover();
+                        resizeText();
+                        applyScrollEffect('songname', 'artistname');
+                    });
+                });
+            }, 300);
+        });
         
 
         // ============================================================
