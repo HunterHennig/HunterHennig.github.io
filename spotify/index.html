@@ -329,26 +329,22 @@
                 
                 if (songChanged) {
                     await sleep(1750);
+
+                    setTimeout(() => {
+                        resizeAlbumCover();
+                        resizeText();
+                        applyScrollEffect('songname', 'artistname');
+                    }, 50);
                 }
 
                 document.getElementById('songname').innerText = song;
                 document.getElementById('artistname').innerText = artist;
-
-                setTimeout(() => {
-                    applyScrollEffect('songname', 'artistname');
-                }, 100);
 
                 const img = document.getElementById('albumcover');
                 img.src = albumArt;
                 img.style.display = 'block';
                 document.querySelector('.albumcover-wrapper').style.display = 'inline-flex';
                 document.querySelector('.glass').style.display = 'flex';
-                setTimeout(() => {
-                    resizeAlbumCover();
-                    resizeText();
-                    applyScrollEffect('songname', 'artistname');
-                }, 5);
-                window.addEventListener('resize', resizeAlbumCover);
 
                 if (albumChanged) {
                     lastAlbumArt = albumArt;
