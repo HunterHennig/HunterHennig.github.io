@@ -33,6 +33,10 @@
     overflow: hidden;
     position: fixed;
     z-index: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
 }
 .container div:nth-child(1){
     height: 120%;
@@ -295,4 +299,10 @@ h1 {
     .glass{
         min-width: max(70vw, 300px);
     }
+}
+
+/* fix overflow on mobile broswers */
+html, body {
+    overflow-x: hidden;
+    overflow-y: hidden;
 }
