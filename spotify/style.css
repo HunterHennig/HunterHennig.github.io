@@ -1,3 +1,22 @@
+/* Style a custom container where the title bar used to be */
+.custom-titlebar {
+  position: fixed;
+  top: env(titlebar-area-y, 0);
+  left: env(titlebar-area-x, 0);
+  width: env(titlebar-area-width, 100%);
+  height: env(titlebar-area-height, 32px);
+  background-color: #1e1e1e;
+
+  /* Make this area draggable so users can move the window */
+  -webkit-app-region: drag;
+  app-region: drag;
+
+  display: flex;
+  align-items: center;
+  padding-left: 12px;
+  color: white;
+}
+
 /* set up font to be used */
 @font-face {
     font-family: 'Nunito';
