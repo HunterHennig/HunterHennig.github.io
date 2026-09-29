@@ -1,0 +1,7 @@
+{
+  "name": "Spotify Tracker",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay"],
+  "theme_color": "#1e1e1e"
+}
