@@ -1,8 +1,20 @@
+/* customize title bar for web app */
 .custom-titlebar {
-  /* ...keep the existing position/size/app-region rules... */
+  position: fixed;
+  top: env(titlebar-area-y, 0);
+  left: env(titlebar-area-x, 0);
+  width: env(titlebar-area-width, 100%);
+  height: env(titlebar-area-height, 32px);
   background-color: transparent;
   z-index: 1000;
-  color: transparent; /* or delete the <span> in the HTML */
+
+  -webkit-app-region: drag;
+  app-region: drag;
+
+  display: flex;
+  align-items: center;
+  padding-left: 12px;
+  color: transparent;
 }
 
 /* set up font to be used */
