@@ -180,10 +180,10 @@
 
         function updateHeader(data) {
             const h1 = document.querySelector('h1');
-            const name = data.display_name || data.id;
-            if (name) {
+            const user_name = data.display_name || data.id;
+            if (user_name) {
                 h1.classList.remove('loading-dots');
-                h1.innerText = `${name} is listening to`;
+                h1.innerText = `${user_name} is listening to:`;
             }
         }
 
