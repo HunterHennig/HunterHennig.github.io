@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="theme-color" content="#122626">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="manifest.json">
     <title>Spotify Tracker</title>
@@ -456,29 +455,6 @@
                 // No token and no code — redirect to Spotify login
                 redirectToSpotifyLogin();
             }
-        }
-
-
-        // ============================================================
-        // Update title bar color with album art
-        // ============================================================
-        
-        const themeMeta = document.querySelector('meta[name="theme-color"]');
-        let currentTheme = [18, 38, 38];
-        let themeAnim;
-        
-        function fadeThemeColor(target, ms = 2000) {
-            const from = [...currentTheme];
-            const start = performance.now();
-            cancelAnimationFrame(themeAnim);
-            const step = now => {
-                const t = Math.min((now - start) / ms, 1);
-                currentTheme = from.map((v, i) => Math.round(v + (target[i] - v) * t));
-                themeMeta.setAttribute('content',
-                    '#' + currentTheme.map(v => v.toString(16).padStart(2, '0')).join(''));
-                if (t < 1) themeAnim = requestAnimationFrame(step);
-            };
-            themeAnim = requestAnimationFrame(step);
         }
 
         init();
