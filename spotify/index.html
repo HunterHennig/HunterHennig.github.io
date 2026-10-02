@@ -457,6 +457,11 @@
             }
         }
 
+        // only show custom window buttons inside the Electron wrapper
+        if (!window.win) {
+            document.querySelector('.win-controls').style.display = 'none';
+        }
+
         init();
     </script>
 </body>
