@@ -15,6 +15,7 @@
     </div>
 
     <div class="win-controls">
+        <button id="pinBtn" onclick="togglePin()" title="Pin on top">📌</button>
         <button onclick="win.minimize()" title="Minimize">–</button>
         <button onclick="win.close()" title="Close">✕</button>
     </div>
@@ -457,9 +458,17 @@
             }
         }
 
+        async function togglePin() {
+            const pinned = await win.togglePin();
+            document.getElementById('pinBtn').classList.toggle('active', pinned);
+        }
+        
         // only show custom window buttons inside the Electron wrapper
         if (!window.win) {
             document.querySelector('.win-controls').style.display = 'none';
+        } else {
+            win.isPinned().then(p =>
+                document.getElementById('pinBtn').classList.toggle('active', p));
         }
 
         init();
