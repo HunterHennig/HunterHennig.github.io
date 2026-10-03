@@ -258,8 +258,6 @@
                 `rgb(${Math.floor(r * darkenFactor)}, ${Math.floor(g * darkenFactor)}, ${Math.floor(b * darkenFactor)})`
             );
 
-            fadeThemeColor(sampledColors[2].map(v => Math.floor(v * darkenFactor * 0.65)));
-
             const divs = document.querySelectorAll('.container div');
             divs.forEach((div, i) => {
                 if (i < 7) {
@@ -319,7 +317,6 @@
                 document.getElementById('songname').innerText = '';
                 document.getElementById('artistname').innerText = '';
                 document.querySelector('.glass').style.display = 'none';
-                fadeThemeColor([18, 38, 38]); 
 
                 const h1 = document.querySelector('h1');
                 h1.classList.add('loading-dots');
