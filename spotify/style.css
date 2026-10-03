@@ -47,6 +47,9 @@
 .win-controls button:hover {
   background: rgba(0, 0, 0, 0.55);
 }
+.win-controls button.active {
+  background: rgba(29, 185, 84, 0.7);
+}
 
 /* set up font to be used */
 @font-face {
