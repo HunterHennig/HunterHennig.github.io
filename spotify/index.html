@@ -15,7 +15,7 @@
     <div class="win-controls">
         <button id="pinBtn" onclick="togglePin()" title="Pin on top">📌</button>
         <button onclick="win.minimize()" title="Minimize">–</button>
-        <button onclick="win.maximize()" title="Maximize">□</button>
+        <button id="maxBtn" onclick="win.toggleMaximize()" title="Maximize">🗖</button>
         <button onclick="win.close()" title="Close">✕</button>
     </div>
     
@@ -465,6 +465,14 @@
         } else {
             win.isPinned().then(p =>
                 document.getElementById('pinBtn').classList.toggle('active', p));
+
+            const setMaxIcon = maxed => {
+                const b = document.getElementById('maxBtn');
+                b.textContent = maxed ? '🗖' : '🗗';
+                b.title = maxed ? 'Restore' : 'Maximize';
+            };
+            win.isMaximized().then(setMaxIcon);
+            win.onMaximizeChange(setMaxIcon)
         }
 
         init();
