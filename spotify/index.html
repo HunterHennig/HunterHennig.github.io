@@ -468,7 +468,7 @@
 
             const setMaxIcon = maxed => {
                 const b = document.getElementById('maxBtn');
-                b.textContent = maxed ? '🗖' : '🗗';
+                b.textContent = maxed ? '🗗' : '🗖';
                 b.title = maxed ? 'Restore' : 'Maximize';
             };
             win.isMaximized().then(setMaxIcon);
