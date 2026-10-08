@@ -365,9 +365,6 @@ h1 {
     #artistname{
         font-size: max(2.5vw, 22px);
     }
-    .glass{
-        min-width: max(70vw, 300px);
-    }
 }
 
 /* fix overflow on mobile broswers */
